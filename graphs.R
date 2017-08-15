@@ -1,4 +1,5 @@
 library(tidyverse)
+library(ggthemes)
 library(cowplot)
 
 ### Visual setup
@@ -12,7 +13,7 @@ title.col <- "gray26"
 fontfam <- "sans"
 text.fontfam <- "Palatino"
 
-theme_custom_2 <- function() {
+theme_sl <- function() {
   # theme colors
   plot.bg <- "white"
   panel.bg <- plot.bg
@@ -61,11 +62,10 @@ state.plot <- function(data, state.name, law.year) {
       labs(x='', y='') +
       geom_segment(x=law.year, y=9, xend=law.year, yend=17,
                    linetype=5, col=text.col) +
-      theme_custom_2()
+      theme_sl()
 
   return(p)
 }
-missouri.p <- state.plot(gun.stats.year.state, "MO", 2007)
 
 
 national.plot <- function(data, hlt.year=0) {
@@ -81,16 +81,18 @@ national.plot <- function(data, hlt.year=0) {
                     group=bg.check,
                     fill=bg.check),
                 alpha=0.2,
+                method='loess',
                 geom='ribbon') +
     stat_smooth(inherit.aes=F,
                 aes(x=year, y=crude.rate,
                     group=bg.check,
                     col=bg.check),
+                method='loess',
                 geom='line') +
     scale_y_continuous(breaks=c(10, 20), lim=c(0,20)) +
     guides(colour=F, alpha=F, fill=F) +
     labs(x='', y='') +
-    theme_custom_2()
+    theme_sl()
 
   if (hlt.year > 0) {
     p <- p + geom_point(data=subset(data, year==hlt.year),
@@ -99,7 +101,6 @@ national.plot <- function(data, hlt.year=0) {
   
   return(p)
 }
-national.p <- national.plot(all.data.year.state)
 
 
 national.plot.density <- function(data, hlt.year=0) {
@@ -117,12 +118,11 @@ national.plot.density <- function(data, hlt.year=0) {
     guides(colour=F, fill=F, alpha=F) +
     scale_x_continuous(breaks=c(10, 20), lim=c(0,20)) +
     scale_y_continuous(breaks=c(0.1), lim=c(0,0.14)) +
-    theme_custom_2() +
+    theme_sl() +
     theme(axis.text.y=element_blank())
 
   return(p)
 }
-national.d.p <- national.plot.density(all.data.year.state)
 
 national_plot_with_density <- function(nat.p, nat.p.density) {
   aligned.plots <- align_plots(nat.p, nat.p.density, align="v")
